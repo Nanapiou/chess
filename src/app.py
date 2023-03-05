@@ -93,8 +93,6 @@ class App:
         :param event:
         :return:
         """
-        if self.turn == 1:
-            return
         x, y = pygame.mouse.get_pos()
         j, i = x // self.tile_width, y // self.tile_height
         coords = position_to_coords((i, j))
@@ -116,8 +114,8 @@ class App:
         :param pos2:
         :return:
         """
-        self.play_move(pos1, pos2)
-        self.bot_play()
+        if self.play_move(pos1, pos2):
+            self.bot_play()
 
     def bot_play(self):
         """
@@ -134,6 +132,7 @@ class App:
     def play_move(self, pos1, pos2):
         """
         Play a move, check castles, en-passant, checkmates
+        Returns True if the game continues
 
         :return:
         """
@@ -171,3 +170,5 @@ class App:
                 print(f'{"White" if self.turn == 1 else "Black"} won by checkmate!')
             else:
                 print("Stalemate!")
+            return False
+        return True

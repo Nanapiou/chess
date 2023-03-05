@@ -5,7 +5,11 @@ import pygame
 import os
 from src.util import pieces_ids, position_to_coords, coords_to_position, evaluate_position
 from src.moves import get_all_legal_moves, make_move, get_black_checks, get_white_checks, simulate_move
-from random import choice
+from typing import List, Dict, Tuple
+
+Board = List[List[int]]
+Position = Tuple[int, int]
+GameData = Dict[str, Board | int | str | Position | Dict[str, bool]]
 
 
 class App:

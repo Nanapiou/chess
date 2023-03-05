@@ -77,7 +77,7 @@ def console_game(fen='rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1')
         turn = 1 - turn
 
 
-def main(fen='rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'):
+def main(fen='r5QK/8/8/8/8/8/8/8 w - - 0 1'):
     """
     The main entry, start a game in a pygame window
 
@@ -102,6 +102,6 @@ def main(fen='rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'):
 
 if __name__ == '__main__':
     try:
-        main('r5QK/8/8/8/8/8/8/8 w - - 0 1')
+        main()
     except KeyboardInterrupt as e:
         print('\n\nBye, have a nice day!')

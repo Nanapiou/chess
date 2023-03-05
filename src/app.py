@@ -28,6 +28,10 @@ class App:
         # Set the running flag to True
         self.running = True
 
+        # Set a semi-transparent point, to use it in update()
+        self.point = pygame.Surface((self.tile_width, self.tile_height), pygame.SRCALPHA)
+        pygame.draw.circle(self.point, (0, 0, 0, 100), (self.tile_width / 2, self.tile_height / 2), self.tile_width / 5)
+
         self.board = game_data['board']
         self.en_passant = game_data['en_passant']
         self.turn = game_data['turn']  # 0 for white, 1 for black
@@ -78,9 +82,7 @@ class App:
                 if self.board[j][i] is not None:
                     self.screen.blit(self.assets[self.board[j][i]], (i * self.tile_width, j * self.tile_height))
                 if (j, i) in self.legal_moves:
-                    pygame.draw.circle(self.screen, (100, 100, 100), (
-                    i * self.tile_width + self.tile_width / 2, j * self.tile_height + self.tile_height / 2),
-                                       self.tile_width / 5)
+                    self.screen.blit(self.point, ( i * self.tile_width , j * self.tile_height))
         pygame.display.update()
 
     def on_click(self, event: pygame.event.Event):

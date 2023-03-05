@@ -15,6 +15,8 @@ pieces_ids = {
 for key in tuple(e for e in pieces_ids):
     pieces_ids[pieces_ids[key]] = key
 
+pieces_values = [None, 10, 30, 30, 50, 90, 900, -10, -30, -30, -50, -90, -900]
+
 
 def draw_matrix(mat: List[List[any]], src: Dict[any, any]) -> None:
     """
@@ -115,3 +117,19 @@ def input_valid_coords(text):
     while len(coords) != 2 or coords[0] not in 'abcdefgh' or not coords[1].isdigit():
         coords = input(text)
     return coords
+
+
+def evaluate_position(board: Board):
+    """
+    Evaluate the board position
+    Negative is good for black, positive is good for white
+
+    :param board:
+    :return:
+    """
+    total = 0
+    for i in range(8):
+        for j in range(8):
+            if board[i][j] is not None:
+                total += pieces_values[board[i][j]]
+    return total

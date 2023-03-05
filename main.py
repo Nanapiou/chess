@@ -29,12 +29,12 @@ def console_game(fen='rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1')
         draw_board(board)
         piece_tile = None
 
-        while not piece_tile in legal_moves_dict:
+        while not coords_to_position(piece_tile) in legal_moves_dict:
             piece_tile = input(
                 f'{"White" if turn == 0 else "Black"} turn\'s, choose a valid piece to move (e.g e{2 if turn == 0 else 7}):\n')
         piece_pos = coords_to_position(piece_tile)
         piece = board[piece_pos[0]][piece_pos[1]]
-        legal_moves = legal_moves_dict[piece_tile]
+        legal_moves = legal_moves_dict[piece_pos]
 
         move_pos = None
         while move_pos not in legal_moves:
@@ -89,8 +89,8 @@ def main(fen='rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'):
 
     pygame.init()
 
-    WIDTH = 1000
-    HEIGHT = 1000
+    WIDTH = 800
+    HEIGHT = 800
 
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
 

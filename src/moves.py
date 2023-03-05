@@ -236,6 +236,46 @@ def make_move(board: Board, pos1: Position, pos2: Position) -> Board:
     x1, y1 = pos1
     x2, y2 = pos2
 
+    board[x1][y1], board[x2][y2] = None, board[x1][y1]
+    return board
+
+def make_move_smooth(board: Board, pos1: Position, pos2: Position, en_passant: Position, castles: Dict[str, bool]) -> GameData:
+    """
+    Make a move considering game data, and returning the new game data
+
+    :param board:
+    :param pos1:
+    :param pos2:
+    :param en_passant:
+    :param castles:
+    :return:
+    """
+    x1, y1 = pos1
+    x2, y2 = pos2
+
+    # Checking castles
+    if (0, 0) == pos1 or (0, 0) == pos2:
+        castles['q'] = False
+    if (0, 7) == pos1 or (0, 7) == pos2:
+        castles['k'] = False
+    if (7, 0) == pos1 or (7, 0) == pos2:
+        castles['Q'] = False
+    if (7, 7) == pos1 or (7, 7) == pos2:
+        castles['K'] = False
+    if (0, 4) == pos1:
+        castles['q'], castles['k'] = False, False
+    if (7, 4) == pos1:
+        castles['Q'], castles['K'] = False, False
+
+    # Checking en-passant
+    en_passant = None
+    if board[x1][y1] == 1:
+        if pos1[0] == 6 and pos2[0] == 4:
+            en_passant = (5, pos1[1])
+    if board[x1][y1] == 7:
+        if pos1[0] == 1 and pos2[0] == 3:
+            en_passant = (2, pos1[1])
+
     # Pawns things (promote, en-passant)
     if board[x1][y1] == 1 or board[x1][y1] == 7:
         if y1 != y2 and board[x2][
@@ -251,8 +291,13 @@ def make_move(board: Board, pos1: Position, pos2: Position) -> Board:
         elif y1 - y2 == 2:  # Queen side
             make_move(board, (x1, 0), (x1, 3))
 
-    board[x1][y1], board[x2][y2] = None, board[x1][y1]
-    return board
+    make_move(board, pos1, pos2)
+    return {
+        "board": board,
+        "castles": castles,
+        "en_passant": en_passant
+    }
+
 
 
 def simulate_move(board: Board, pos1: Position, pos2: Position) -> Board:
@@ -271,7 +316,7 @@ def simulate_move(board: Board, pos1: Position, pos2: Position) -> Board:
 
 
 def get_all_legal_moves(board: Board, player: int, en_passant: Position, castles: Dict[str, bool]) -> Dict[
-    str, List[Position]]:
+    Position, List[Position]]:
     """
     Get all the legal moves available for the player
 
@@ -289,7 +334,8 @@ def get_all_legal_moves(board: Board, player: int, en_passant: Position, castles
     for piece_pos in pieces:
         moves = get_legal_moves(board, piece_pos, en_passant, castles)
         if len(moves) > 0:
-            legal_moves[position_to_coords(piece_pos)] = moves
+            # legal_moves[position_to_coords(piece_pos)] = moves
+            legal_moves[piece_pos] = moves
     return legal_moves
 
 

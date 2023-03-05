@@ -4,7 +4,8 @@ The pygame app of the chess game
 import pygame
 import os
 from src.util import pieces_ids, position_to_coords, coords_to_position, evaluate_position
-from src.moves import get_all_legal_moves, make_move, get_black_checks, get_white_checks, simulate_move
+from src.moves import get_all_legal_moves, make_move_smooth, get_black_checks, get_white_checks, simulate_move
+from src.bot import create_decision_tree, minimax
 from typing import List, Dict, Tuple
 
 Board = List[List[int]]
@@ -87,7 +88,7 @@ class App:
                 if self.board[j][i] is not None:
                     self.screen.blit(self.assets[self.board[j][i]], (i * self.tile_width, j * self.tile_height))
                 if (j, i) in self.legal_moves:
-                    self.screen.blit(self.point, ( i * self.tile_width , j * self.tile_height))
+                    self.screen.blit(self.point, (i * self.tile_width , j * self.tile_height))
         pygame.display.update()
 
     def on_click(self, event: pygame.event.Event):
@@ -99,9 +100,8 @@ class App:
         """
         x, y = pygame.mouse.get_pos()
         j, i = x // self.tile_width, y // self.tile_height
-        coords = position_to_coords((i, j))
-        if coords in self.all_legal_moves:
-            self.legal_moves = self.all_legal_moves[coords]
+        if (i, j) in self.all_legal_moves:
+            self.legal_moves = self.all_legal_moves[(i, j)]
             self.selected_piece = (i, j)
         elif (i, j) in self.legal_moves:
             self.player_play(self.selected_piece, (i, j))
@@ -129,9 +129,8 @@ class App:
         """
         pos1, pos2 = None, None
         best_eval = None
-        for key in self.all_legal_moves:
-            piece_pos = coords_to_position(key)
-            for move in self.all_legal_moves[key]:
+        for piece_pos in self.all_legal_moves:
+            for move in self.all_legal_moves[piece_pos]:
                 current_eval = evaluate_position(simulate_move(self.board, piece_pos, move))
                 if best_eval is None:
                     best_eval = current_eval
@@ -145,8 +144,16 @@ class App:
                         if best_eval > current_eval:
                             best_eval = current_eval
                             pos1, pos2 = piece_pos, move
-
-        self.play_move(pos1, pos2)
+        # tree = create_decision_tree({
+        #     "board": self.board,
+        #     "castles": self.castles,
+        #     "en_passant": self.en_passant,
+        #     "turn": self.turn
+        # }, 2)
+        # best_data = minimax(tree, 2)
+        # print(best_data)
+        # pos1, pos2 = best_data['move']
+        # self.play_move(pos1, pos2)
 
     def play_move(self, pos1, pos2):
         """
@@ -155,31 +162,9 @@ class App:
 
         :return:
         """
-        piece = self.board[pos1[0]][pos1[1]]
-        make_move(self.board, pos1, pos2)
-
-        # Checking castles
-        if (0, 0) == pos1 or (0, 0) == pos2:
-            self.castles['q'] = False
-        if (0, 7) == pos1 or (0, 7) == pos2:
-            self.castles['k'] = False
-        if (7, 0) == pos1 or (7, 0) == pos2:
-            self.castles['Q'] = False
-        if (7, 7) == pos1 or (7, 7) == pos2:
-            self.castles['K'] = False
-        if (0, 4) == pos1:
-            self.castles['q'], self.castles['k'] = False, False
-        if (7, 4) == pos1:
-            self.castles['Q'], self.castles['K'] = False, False
-
-        # Checking en-passant
-        self.en_passant = None
-        if piece == 1:
-            if pos1[0] == 6 and pos2[0] == 4:
-                self.en_passant = (5, pos1[1])
-        if piece == 7:
-            if pos1[0] == 1 and pos2[0] == 3:
-                self.en_passant = (2, pos1[1])
+        data = make_move_smooth(self.board, pos1, pos2, self.en_passant, self.castles)
+        self.castles = data['castles']
+        self.en_passant = data['en_passant']
 
         self.turn = 1 - self.turn
         self.all_legal_moves = get_all_legal_moves(self.board, self.turn, self.en_passant, self.castles)

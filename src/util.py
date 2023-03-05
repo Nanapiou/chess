@@ -133,3 +133,6 @@ def evaluate_position(board: Board):
             if board[i][j] is not None:
                 total += pieces_values[board[i][j]]
     return total
+
+if __name__ == '__main__':
+    draw_board([[10, None, 9, 11, 12, 9, 8, 10], [7, 7, 7, 7, 7, 7, 7, 7], [8, None, None, None, None, None, None, None], [None, None, None, None, 1, None, None, None], [None, None, None, None, None, None, None, None], [None, None, None, None, None, None, None, None], [1, 1, 1, 1, None, 1, 1, 1], [4, 2, 3, 5, 6, 3, 2, 4]])

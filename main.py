@@ -102,6 +102,6 @@ def main(fen='rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'):
 
 if __name__ == '__main__':
     try:
-        main()
+        main('r5QK/8/8/8/8/8/8/8 w - - 0 1')
     except KeyboardInterrupt as e:
         print('\n\nBye, have a nice day!')

@@ -3,8 +3,9 @@ The pygame app of the chess game
 """
 import pygame
 import os
-from src.util import pieces_ids, position_to_coords
+from src.util import pieces_ids, position_to_coords, coords_to_position
 from src.moves import get_all_legal_moves, make_move, get_black_checks, get_white_checks
+from random import choice
 
 
 class App:
@@ -92,6 +93,8 @@ class App:
         :param event:
         :return:
         """
+        if self.turn == 1:
+            return
         x, y = pygame.mouse.get_pos()
         j, i = x // self.tile_width, y // self.tile_height
         coords = position_to_coords((i, j))
@@ -99,18 +102,39 @@ class App:
             self.legal_moves = self.all_legal_moves[coords]
             self.selected_piece = (i, j)
         elif (i, j) in self.legal_moves:
-            self.play(self.selected_piece, (i, j))
+            self.player_play(self.selected_piece, (i, j))
             self.legal_moves, self.selected_piece = [], None
         else:
             self.legal_moves = []
             self.selected_piece = None
 
-    def play(self, pos1, pos2):
+    def player_play(self, pos1, pos2):
         """
         Assuming that the move can be done
 
         :param pos1:
         :param pos2:
+        :return:
+        """
+        self.play_move(pos1, pos2)
+        self.bot_play()
+
+    def bot_play(self):
+        """
+        A bot play a turn!
+
+        :return:
+        """
+        coords = choice([e for e in self.all_legal_moves.keys()])
+        pos1 = coords_to_position(coords)
+        pos2 = choice(self.all_legal_moves[coords])
+
+        self.play_move(pos1, pos2)
+
+    def play_move(self, pos1, pos2):
+        """
+        Play a move, check castles, en-passant, checkmates
+
         :return:
         """
         piece = self.board[pos1[0]][pos1[1]]

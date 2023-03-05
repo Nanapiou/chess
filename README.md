@@ -1,6 +1,8 @@
 # Python chess
 
-**Just a little python chess game, PvP.**
+**Just a little python chess game, player VS bot.**
+
+*Bot is playing random for the moment...*
 
 
 Handles:

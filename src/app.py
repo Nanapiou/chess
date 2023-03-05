@@ -153,7 +153,7 @@ class App:
         # best_data = minimax(tree, 2)
         # print(best_data)
         # pos1, pos2 = best_data['move']
-        # self.play_move(pos1, pos2)
+        self.play_move(pos1, pos2)
 
     def play_move(self, pos1, pos2):
         """

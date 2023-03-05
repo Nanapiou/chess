@@ -3,8 +3,8 @@
 A chess game written in Python.
 """
 from typing import List, Dict, Tuple
-from util import draw_board, load_fen, coords_to_position, position_to_coords, input_valid_coords
-from moves import get_all_legal_moves, make_move, get_white_checks, get_black_checks
+from src.util import draw_board, load_fen, coords_to_position, position_to_coords, input_valid_coords
+from src.moves import get_all_legal_moves, make_move, get_white_checks, get_black_checks
 
 Board = List[List[int]]
 Position = Tuple[int, int]
@@ -85,7 +85,7 @@ def main(fen='rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'):
     :return:
     """
     import pygame
-    from app import App
+    from src.app import App
 
     pygame.init()
 

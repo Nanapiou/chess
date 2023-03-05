@@ -3,9 +3,8 @@ The pygame app of the chess game
 """
 import pygame
 import os
-from util import pieces_ids
-from moves import get_all_legal_moves, make_move, get_black_checks, get_white_checks
-from util import position_to_coords
+from src.util import pieces_ids, position_to_coords
+from src.moves import get_all_legal_moves, make_move, get_black_checks, get_white_checks
 
 
 class App:
@@ -74,11 +73,14 @@ class App:
         for i in range(8):
             for j in range(8):
                 pygame.draw.rect(self.screen, (238, 238, 210) if (i + j) % 2 == 0 else (118, 150, 86),
-                                 pygame.Rect(self.tile_width * i, self.tile_height * j, self.tile_width, self.tile_height))
+                                 pygame.Rect(self.tile_width * i, self.tile_height * j, self.tile_width,
+                                             self.tile_height))
                 if self.board[j][i] is not None:
                     self.screen.blit(self.assets[self.board[j][i]], (i * self.tile_width, j * self.tile_height))
                 if (j, i) in self.legal_moves:
-                    pygame.draw.circle(self.screen, (100, 100, 100), (i * self.tile_width + self.tile_width / 2, j * self.tile_height + self.tile_height / 2), self.tile_width / 5)
+                    pygame.draw.circle(self.screen, (100, 100, 100), (
+                    i * self.tile_width + self.tile_width / 2, j * self.tile_height + self.tile_height / 2),
+                                       self.tile_width / 5)
         pygame.display.update()
 
     def on_click(self, event: pygame.event.Event):
@@ -112,7 +114,6 @@ class App:
         piece = self.board[pos1[0]][pos1[1]]
         make_move(self.board, pos1, pos2)
 
-
         # Checking castles
         if (0, 0) == pos1 or (0, 0) == pos2:
             self.castles['q'] = False
@@ -135,7 +136,6 @@ class App:
         if piece == 7:
             if pos1[0] == 1 and pos2[0] == 3:
                 self.en_passant = (2, pos1[1])
-
 
         self.turn = 1 - self.turn
         self.all_legal_moves = get_all_legal_moves(self.board, self.turn, self.en_passant, self.castles)

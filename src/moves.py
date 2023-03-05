@@ -2,7 +2,7 @@
 Some moves getter functions
 """
 from typing import List, Dict, Tuple
-from util import position_to_coords
+from src.util import position_to_coords
 
 Board = List[List[int]]
 Position = Tuple[int, int]

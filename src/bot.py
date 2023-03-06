@@ -60,14 +60,24 @@ def minimax(tree: DecisionTree, dept: int) -> Tuple[Position, Position]:
     if dept == 0 or 'children' not in tree:
         return tree
 
-    value = tree['children'][0]['value']
-    best_child = tree['children'][0]
-    for child in tree['children']:
-        new_data = minimax(child, dept - 1)
-        if new_data['value'] > value:
-            value = new_data['value']
-            best_child = new_data
-    return best_child
+    if tree['game_data']['turn'] == 0:
+        value = -10000
+        best_child = None
+        for child in tree['children']:
+            current = minimax(child, dept - 1)
+            if current['value'] > value:
+                value = current['value']
+                best_child = child
+        return best_child
+    else:
+        value = 10000
+        best_child = None
+        for child in tree['children']:
+            current = minimax(child, dept - 1)
+            if current['value'] < value:
+                value = current['value']
+                best_child = child
+        return best_child
 
 
 if __name__ == '__main__':

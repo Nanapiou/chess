@@ -2,7 +2,7 @@
 
 **Just a little python chess game, player VS bot.**
 
-*Bot is playing random for the moment...*
+*Bot is playing seeing 3 moves in the future for the moment...*
 
 
 Handles:

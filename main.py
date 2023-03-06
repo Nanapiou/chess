@@ -92,7 +92,7 @@ def main(fen='rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'):
     WIDTH = 800
     HEIGHT = 800
 
-    screen = pygame.display.set_mode((WIDTH, HEIGHT))
+    screen = pygame.display.set_mode((WIDTH, HEIGHT), pygame.RESIZABLE)
 
     app = App(screen, load_fen(fen))
     app.run()

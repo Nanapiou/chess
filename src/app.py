@@ -159,6 +159,7 @@ class App:
                 print(f'{"White" if self.turn == 1 else "Black"} won by checkmate!')
             else:
                 print("Stalemate!")
+            self.update()
             sleep(5)
             self.running = False
             return False

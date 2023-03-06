@@ -104,8 +104,9 @@ class App:
             self.legal_moves = self.all_legal_moves[(i, j)]
             self.selected_piece = (i, j)
         elif (i, j) in self.legal_moves:
-            self.player_play(self.selected_piece, (i, j))
+            selected = self.selected_piece
             self.legal_moves, self.selected_piece = [], None
+            self.player_play(selected, (i, j))
         else:
             self.legal_moves = []
             self.selected_piece = None
@@ -119,6 +120,7 @@ class App:
         :return:
         """
         if self.play_move(pos1, pos2):
+            self.update()
             self.bot_play()
 
     def bot_play(self):
@@ -150,8 +152,8 @@ class App:
             "castles": self.castles,
             "en_passant": self.en_passant,
             "turn": self.turn
-        }, 2)
-        best_data = minimax(tree, 2)
+        }, 3)
+        best_data = minimax(tree, 3)
         pos1, pos2 = best_data['move']
 
         self.play_move(pos1, pos2)

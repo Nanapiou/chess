@@ -3,7 +3,7 @@ Some bot functions
 """
 from typing import List, Dict, Tuple
 from src.util import evaluate_position, load_fen
-from src.moves import get_all_legal_moves, make_move_smooth
+from src.moves import get_all_legal_moves, make_move_smooth, get_black_checks, get_white_checks
 
 Board = List[List[int]]
 Position = Tuple[int, int]
@@ -31,21 +31,27 @@ def create_decision_tree(game_data: GameData, dept: int, move: Tuple[Position, P
     }
 
     if dept > 0:
-        node['children'] = []
         all_legal_moves = get_all_legal_moves(game_data['board'], game_data['turn'], game_data['en_passant'], game_data['castles'])
-        for piece_pos in all_legal_moves:
-            for move in all_legal_moves[piece_pos]:
-                new_board = []
-                for l in game_data['board']:
-                    new_board.append(l.copy())
-                new_data = make_move_smooth(new_board, piece_pos, move, game_data['en_passant'], game_data['castles'].copy())
-                child = create_decision_tree({
-                    "board": new_board,
-                    "turn": 1 - game_data["turn"],
-                    "castles": new_data["castles"],
-                    "en_passant": new_data["en_passant"]
-                }, dept - 1, (piece_pos, move))
-                node['children'].append(child)
+        if len(all_legal_moves) == 0:
+            if len(get_black_checks(game_data['board']) if game_data['turn'] == 0 else get_white_checks(game_data['board'])) > 0:
+                node['value'] = -10000 if game_data['turn'] == 0 else 10000
+            else:
+                node['value'] = 0
+        else:
+            node['children'] = []
+            for piece_pos in all_legal_moves:
+                for move in all_legal_moves[piece_pos]:
+                    new_board = []
+                    for l in game_data['board']:
+                        new_board.append(l.copy())
+                    new_data = make_move_smooth(new_board, piece_pos, move, game_data['en_passant'], game_data['castles'].copy())
+                    child = create_decision_tree({
+                        "board": new_board,
+                        "turn": 1 - game_data["turn"],
+                        "castles": new_data["castles"],
+                        "en_passant": new_data["en_passant"]
+                    }, dept - 1, (piece_pos, move))
+                    node['children'].append(child)
 
     return node
 

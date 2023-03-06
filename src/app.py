@@ -129,24 +129,6 @@ class App:
 
         :return:
         """
-        # pos1, pos2 = None, None
-        # best_eval = None
-        # for piece_pos in self.all_legal_moves:
-        #     for move in self.all_legal_moves[piece_pos]:
-        #         current_eval = evaluate_position(simulate_move(self.board, piece_pos, move))
-        #         if best_eval is None:
-        #             best_eval = current_eval
-        #             pos1, pos2 = piece_pos, move
-        #         else:
-        #             if self.turn == 0:
-        #                 if best_eval < current_eval:
-        #                     best_eval = current_eval
-        #                     pos1, pos2 = piece_pos, move
-        #             else:
-        #                 if best_eval > current_eval:
-        #                     best_eval = current_eval
-        #                     pos1, pos2 = piece_pos, move
-
         tree = create_decision_tree({
             "board": self.board,
             "castles": self.castles,

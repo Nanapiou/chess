@@ -3,8 +3,9 @@ The pygame app of the chess game
 """
 import pygame
 import os
-from src.util import pieces_ids, position_to_coords, coords_to_position, evaluate_position
-from src.moves import get_all_legal_moves, make_move_smooth, get_black_checks, get_white_checks, simulate_move
+from time import sleep
+from src.util import pieces_ids
+from src.moves import get_all_legal_moves, make_move_smooth, get_black_checks, get_white_checks
 from src.bot import create_decision_tree, minimax
 from typing import List, Dict, Tuple
 
@@ -154,10 +155,11 @@ class App:
         self.turn = 1 - self.turn
         self.all_legal_moves = get_all_legal_moves(self.board, self.turn, self.en_passant, self.castles)
         if len(self.all_legal_moves) == 0:
-            self.running = False
             if len(get_black_checks(self.board) if self.turn == 0 else get_white_checks(self.board)):
                 print(f'{"White" if self.turn == 1 else "Black"} won by checkmate!')
             else:
                 print("Stalemate!")
+            sleep(5)
+            self.running = False
             return False
         return True

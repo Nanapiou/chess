@@ -83,6 +83,8 @@ def minimax(tree: DecisionTree, dept: int) -> Tuple[Position, Position]:
             if current['value'] < value:
                 value = current['value']
                 best_child = child
+            if dept == 3:
+                print(child['value'], child['game_data'], child['move'])
         return best_child
 
 

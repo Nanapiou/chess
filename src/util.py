@@ -140,15 +140,39 @@ def load_fen(string: str) -> GameData:
         'board': board,
         'turn': 0 if turn == 'w' else 1,
         'castles': {
-            'Q': 'Q' in castles,
             'K': 'K' in castles,
-            'q': 'q' in castles,
+            'Q': 'Q' in castles,
             'k': 'k' in castles,
+            'q': 'q' in castles,
         },
         'en_passant': coords_to_position(en_passant) if en_passant != '-' else None,
         'count_b': int(count_b),
         'count': int(count),
     }
+
+def create_fen(game_data: GameData) -> str:
+    """
+    Create a FEN string from a game data
+
+    :param game_data:
+    :return:
+    """
+    string = ""
+    for l in game_data['board']:
+        void_count = 0
+        for e in l:
+            if e is None:
+                void_count += 1
+            else:
+                if void_count != 0:
+                    string += str(void_count)
+                    void_count = 0
+                string += pieces_ids[e]
+        if void_count != 0:
+            string += str(void_count)
+        string += '/'
+    return string[:-1] + f' {"w" if game_data["turn"] == 0 else "b"} {"".join(e for e in game_data["castles"] if game_data["castles"] and e in "KQkq")} {"-" if game_data["en_passant"] is None else position_to_coords(game_data["en_passant"])} {game_data["count_b"]} {game_data["count"]}'
+
 
 
 def coords_to_position(coords: str) -> Position:
@@ -227,7 +251,7 @@ def evaluate_position(board: Board):
 
 
 if __name__ == '__main__':
-    draw_board(
-        [[10, None, 9, 11, 12, 9, 8, 10], [7, 7, 7, 7, 7, 7, 7, 7], [8, None, None, None, None, None, None, None],
-         [None, None, None, None, 1, None, None, None], [None, None, None, None, None, None, None, None],
-         [None, None, None, None, None, None, None, None], [1, 1, 1, 1, None, 1, 1, 1], [4, 2, 3, 5, 6, 3, 2, 4]])
+    data = load_fen('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1')
+    print(data)
+    fen = create_fen(data)
+    print(fen)

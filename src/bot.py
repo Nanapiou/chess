@@ -9,6 +9,8 @@ Board = List[List[int]]
 Position = Tuple[int, int]
 GameData = Dict[str, Board | int | str | Position | Dict[str, bool]]
 DecisionTree = Dict[str, int | float | str | Dict[any, any] | Tuple[Position, Position]]
+
+
 def create_decision_tree(game_data: GameData, dept: int, move: Tuple[Position, Position] = None) -> DecisionTree:
     """
     Create a decision tree that looks like
@@ -31,9 +33,11 @@ def create_decision_tree(game_data: GameData, dept: int, move: Tuple[Position, P
     }
 
     if dept > 0:
-        all_legal_moves = get_all_legal_moves(game_data['board'], game_data['turn'], game_data['en_passant'], game_data['castles'])
+        all_legal_moves = get_all_legal_moves(game_data['board'], game_data['turn'], game_data['en_passant'],
+                                              game_data['castles'])
         if len(all_legal_moves) == 0:
-            if len(get_black_checks(game_data['board']) if game_data['turn'] == 0 else get_white_checks(game_data['board'])) > 0:
+            if len(get_black_checks(game_data['board']) if game_data['turn'] == 0 else get_white_checks(
+                    game_data['board'])) > 0:
                 node['value'] = -10000 if game_data['turn'] == 0 else 10000
             else:
                 node['value'] = 0
@@ -44,7 +48,8 @@ def create_decision_tree(game_data: GameData, dept: int, move: Tuple[Position, P
                     new_board = []
                     for l in game_data['board']:
                         new_board.append(l.copy())
-                    new_data = make_move_smooth(new_board, piece_pos, move, game_data['en_passant'], game_data['castles'].copy())
+                    new_data = make_move_smooth(new_board, piece_pos, move, game_data['en_passant'],
+                                                game_data['castles'].copy())
                     child = create_decision_tree({
                         "board": new_board,
                         "turn": 1 - game_data["turn"],
@@ -54,6 +59,7 @@ def create_decision_tree(game_data: GameData, dept: int, move: Tuple[Position, P
                     node['children'].append(child)
 
     return node
+
 
 def minimax(tree: DecisionTree, dept: int) -> Tuple[Position, Position]:
     """
@@ -74,6 +80,7 @@ def minimax(tree: DecisionTree, dept: int) -> Tuple[Position, Position]:
             if current['value'] > value:
                 value = current['value']
                 best_child = child
+        tree['value'] = best_child['value']
         return best_child
     else:
         value = 10001
@@ -83,8 +90,7 @@ def minimax(tree: DecisionTree, dept: int) -> Tuple[Position, Position]:
             if current['value'] < value:
                 value = current['value']
                 best_child = child
-            if dept == 3:
-                print(child['value'], child['game_data'], child['move'])
+        tree['value'] = best_child['value']
         return best_child
 
 
@@ -92,5 +98,6 @@ if __name__ == '__main__':
     data = load_fen('rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 1')
     t = create_decision_tree(data, 3)
     import json
+
     with open('tree.json', 'w') as f:
         json.dump(t, f)

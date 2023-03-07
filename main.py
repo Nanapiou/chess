@@ -89,8 +89,8 @@ def main(fen='rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'):
 
     pygame.init()
 
-    WIDTH = 800
-    HEIGHT = 800
+    WIDTH = 900
+    HEIGHT = 900
 
     screen = pygame.display.set_mode((WIDTH, HEIGHT), pygame.RESIZABLE)
 
@@ -102,6 +102,7 @@ def main(fen='rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'):
 
 if __name__ == '__main__':
     try:
-        main('rnbr2k1/pp3ppp/1q1b1n2/6N1/2B1p3/2B5/PPP2PPP/RN1Q1RK1 w - - 3 13')
+        # main('2r4k/2b5/8/8/8/8/5PPP/2Q3K1 w KQkq - 0 1')
+        main()
     except KeyboardInterrupt as e:
         print('\n\nBye, have a nice day!')

@@ -3,7 +3,8 @@ The pygame app of the chess game
 """
 import pygame
 import os
-from src.util import pieces_ids, create_fen, draw_board
+from time import sleep
+from src.util import pieces_ids
 from src.moves import get_all_legal_moves, make_move_smooth, get_black_checks, get_white_checks
 from src.bot import create_decision_tree, minimax
 from typing import List, Dict, Tuple
@@ -88,7 +89,7 @@ class App:
                 if self.board[j][i] is not None:
                     self.screen.blit(self.assets[self.board[j][i]], (i * self.tile_width, j * self.tile_height))
                 if (j, i) in self.legal_moves:
-                    self.screen.blit(self.point, (i * self.tile_width , j * self.tile_height))
+                    self.screen.blit(self.point, (i * self.tile_width, j * self.tile_height))
         pygame.display.update()
 
     def on_click(self, event: pygame.event.Event):
@@ -135,21 +136,13 @@ class App:
             "en_passant": self.en_passant,
             "turn": self.turn
         }, 3)
-
-        # TESTING
-        for e in tree['children']:
-            if e['move'] == ((2, 3), (6, 7)):
-                for f in e['children']:
-                    if f['move'] == ((7, 6), (6, 7)):
-                        for g in f['children']:
-                            if g['move'] == ((0, 3), (7, 3)):
-                                draw_board(g['game_data']['board'])
-                                print(g)
-
         best_data = minimax(tree, 3)
         pos1, pos2 = best_data['move']
 
-        self.play_move(pos1, pos2)
+        if self.play_move(pos1, pos2):
+            # self.update()
+            # self.bot_play()
+            pass
 
     def play_move(self, pos1, pos2):
         """
@@ -169,17 +162,8 @@ class App:
                 print(f'{"White" if self.turn == 1 else "Black"} won by checkmate!')
             else:
                 print("Stalemate!")
-            print("Here is the FEN position:")
-            print(create_fen({
-                "board": self.board,
-                "turn": self.turn,
-                "castles": self.castles,
-                "en_passant": self.en_passant,
-                "count_b": 0,
-                "count": 1
-            }))
             self.update()
-            pygame.time.wait(5000)
+            sleep(5)
             self.running = False
             return False
         return True

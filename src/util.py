@@ -37,7 +37,7 @@ knight_table = [
     [-3.0, 0.0, 1.5, 2.0, 2.0, 1.5, 0.0, -3.0],
     [-3.0, 0.5, 1.0, 1.5, 1.5, 1.0, 0.5, -3.0],
     [-4.0, -2.0, 0.0, 0.5, 0.5, 0.0, -2.0, -4.0],
-    [-5.0, 4.0, -3.0, -3.0, -3.0, -3.0, -4.0, -5.0]
+    [-5.0, -4.0, -3.0, -3.0, -3.0, -3.0, -4.0, -5.0]
 ]
 
 bishop_table = [
@@ -140,39 +140,15 @@ def load_fen(string: str) -> GameData:
         'board': board,
         'turn': 0 if turn == 'w' else 1,
         'castles': {
-            'K': 'K' in castles,
             'Q': 'Q' in castles,
-            'k': 'k' in castles,
+            'K': 'K' in castles,
             'q': 'q' in castles,
+            'k': 'k' in castles,
         },
         'en_passant': coords_to_position(en_passant) if en_passant != '-' else None,
         'count_b': int(count_b),
         'count': int(count),
     }
-
-def create_fen(game_data: GameData) -> str:
-    """
-    Create a FEN string from a game data
-
-    :param game_data:
-    :return:
-    """
-    string = ""
-    for l in game_data['board']:
-        void_count = 0
-        for e in l:
-            if e is None:
-                void_count += 1
-            else:
-                if void_count != 0:
-                    string += str(void_count)
-                    void_count = 0
-                string += pieces_ids[e]
-        if void_count != 0:
-            string += str(void_count)
-        string += '/'
-    return string[:-1] + f' {"w" if game_data["turn"] == 0 else "b"} {"".join(e for e in game_data["castles"] if game_data["castles"] and e in "KQkq")} {"-" if game_data["en_passant"] is None else position_to_coords(game_data["en_passant"])} {game_data["count_b"]} {game_data["count"]}'
-
 
 
 def coords_to_position(coords: str) -> Position:
@@ -251,7 +227,8 @@ def evaluate_position(board: Board):
 
 
 if __name__ == '__main__':
-    data = load_fen('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1')
-    print(data)
-    fen = create_fen(data)
-    print(fen)
+    data1 = load_fen('r1bqkbnr/pppppppp/2n5/8/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 1 2')
+    data2 = load_fen('rnbqkb1r/pppppppp/5n2/8/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 1 2')
+    print(evaluate_position(data1['board']))
+    print()
+    print(evaluate_position(data2['board']))

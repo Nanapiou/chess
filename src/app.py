@@ -6,7 +6,7 @@ import os
 from time import sleep
 from src.util import pieces_ids
 from src.moves import get_all_legal_moves, make_move_smooth, get_black_checks, get_white_checks
-from src.bot import create_decision_tree, minimax
+from src.bot import create_decision_tree, minimax, minimax_root
 from typing import List, Dict, Tuple
 
 Board = List[List[int]]
@@ -121,7 +121,6 @@ class App:
         :return:
         """
         if self.play_move(pos1, pos2):
-            self.update()
             self.bot_play()
 
     def bot_play(self):
@@ -139,8 +138,14 @@ class App:
         best_data = minimax(tree, 3)
         pos1, pos2 = best_data['move']
 
+        # pos1, pos2 = minimax_root({
+        #     "board": self.board,
+        #     "castles": self.castles,
+        #     "en_passant": self.en_passant,
+        #     "turn": self.turn
+        # }, 3)
+
         if self.play_move(pos1, pos2):
-            # self.update()
             # self.bot_play()
             pass
 
@@ -157,12 +162,12 @@ class App:
 
         self.turn = 1 - self.turn
         self.all_legal_moves = get_all_legal_moves(self.board, self.turn, self.en_passant, self.castles)
+        self.update()
         if len(self.all_legal_moves) == 0:
             if len(get_black_checks(self.board) if self.turn == 0 else get_white_checks(self.board)):
                 print(f'{"White" if self.turn == 1 else "Black"} won by checkmate!')
             else:
                 print("Stalemate!")
-            self.update()
             sleep(5)
             self.running = False
             return False

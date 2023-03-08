@@ -252,6 +252,10 @@ def make_move_smooth(board: Board, pos1: Position, pos2: Position, en_passant: P
     """
     x1, y1 = pos1
     x2, y2 = pos2
+    old_tiles = {
+        pos1: board[x1][y1],
+        pos2: board[x2][y2]
+    }
 
     # Checking castles
     if (0, 0) == pos1 or (0, 0) == pos2:
@@ -280,6 +284,7 @@ def make_move_smooth(board: Board, pos1: Position, pos2: Position, en_passant: P
     if board[x1][y1] == 1 or board[x1][y1] == 7:
         if y1 != y2 and board[x2][
             y2] is None:  # En-passants, assuming that they are legal if there isn't a piece on a diagonal move from a pawn
+            old_tiles[(x1, y2)] = board[x1][y2]
             board[x1][y2] = None
         if x2 == 7 or x2 == 0:  # Queen promotion, assuming that a pawn on the first or the last line can promote
             board[x1][y1] += 4  # From pawn to queen id
@@ -287,16 +292,34 @@ def make_move_smooth(board: Board, pos1: Position, pos2: Position, en_passant: P
     # Castles, assuming that they are legal if the king love two tiles on a side
     if board[x1][y1] == 6 or board[x1][y1] == 12:
         if y2 - y1 == 2:  # King side
+            old_tiles[(x1, 7)] = board[x1][7]
+            old_tiles[(x1, 5)] = board[x1][5]
             make_move(board, (x1, 7), (x1, 5))
         elif y1 - y2 == 2:  # Queen side
+            old_tiles[(x1, 0)] = board[x1][0]
+            old_tiles[(x1, 3)] = board[x1][3]
             make_move(board, (x1, 0), (x1, 3))
 
     make_move(board, pos1, pos2)
     return {
         "board": board,
         "castles": castles,
-        "en_passant": en_passant
+        "en_passant": en_passant,
+        "old_tiles": old_tiles
     }
+
+def reverse_moves(board: Board, old_tiles: Dict[Position, int]) -> Board:
+    """
+    Just reverse moves, basically just assign dict values
+    Return the board itself
+
+    :param board:
+    :param old_tiles:
+    :return:
+    """
+    for pos in old_tiles:
+        board[pos[0]][pos[1]] = old_tiles[pos]
+    return board
 
 
 

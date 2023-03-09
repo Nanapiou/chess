@@ -112,7 +112,8 @@ def minimax_root(game_data: GameData, dept: int) -> Tuple[Position, Position]:
         for piece_pos in all_legal_moves:
             for move in all_legal_moves[piece_pos]:
                 data = make_move_smooth(board, piece_pos, move, game_data_copy['en_passant'], game_data_copy['castles'])
-                v = minimax_new(game_data_copy, dept)
+                data['turn'] = 1 - game_data['turn']
+                v = minimax_new(data, dept - 1)
                 if v > value:
                     best, value = (piece_pos, move), v
                 reverse_moves(board, data['old_tiles'])
@@ -122,7 +123,8 @@ def minimax_root(game_data: GameData, dept: int) -> Tuple[Position, Position]:
         for piece_pos in all_legal_moves:
             for move in all_legal_moves[piece_pos]:
                 data = make_move_smooth(board, piece_pos, move, game_data_copy['en_passant'], game_data_copy['castles'])
-                v = minimax_new(game_data_copy, dept)
+                data['turn'] = 1 - game_data['turn']
+                v = minimax_new(data, dept - 1)
                 if v < value:
                     best, value = (piece_pos, move), v
                 reverse_moves(board, data['old_tiles'])

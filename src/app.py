@@ -129,21 +129,21 @@ class App:
 
         :return:
         """
-        tree = create_decision_tree({
-            "board": self.board,
-            "castles": self.castles,
-            "en_passant": self.en_passant,
-            "turn": self.turn
-        }, 3)
-        best_data = minimax(tree, 3)
-        pos1, pos2 = best_data['move']
-
-        # pos1, pos2 = minimax_root({
+        # tree = create_decision_tree({
         #     "board": self.board,
         #     "castles": self.castles,
         #     "en_passant": self.en_passant,
         #     "turn": self.turn
         # }, 3)
+        # best_data = minimax(tree, 3)
+        # pos1, pos2 = best_data['move']
+
+        pos1, pos2 = minimax_root({
+            "board": self.board,
+            "castles": self.castles,
+            "en_passant": self.en_passant,
+            "turn": self.turn
+        }, 4)
 
         if self.play_move(pos1, pos2):
             # self.bot_play()

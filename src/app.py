@@ -19,7 +19,7 @@ class App:
     The pygame app.
     """
 
-    def __init__(self, screen: pygame.Surface, game_data):
+    def __init__(self, screen: pygame.Surface, game_data, **kwargs):
         # Set the screen
         self.screen = screen
         self.width, self.height = screen.get_width(), screen.get_height()
@@ -55,6 +55,17 @@ class App:
             self.assets[pieces_ids[file.name[0]]] = pygame.transform.scale(
                 pygame.image.load(f'./assets/black/{file.name}'), (self.width / 8, self.height / 8))
 
+        self.players_bot = [False, False]
+        if 'white' in kwargs:
+            if kwargs['white'] == 'bot':
+                self.players_bot[0] = True
+        if 'black' in kwargs:
+            if kwargs['black'] == 'bot':
+                self.players_bot[1] = True
+
+        if self.players_bot[self.turn]:
+            self.bot_play()
+
     def run(self):
         """
         Run the app
@@ -66,7 +77,7 @@ class App:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
-                if event.type == pygame.MOUSEBUTTONUP:
+                elif event.type == pygame.MOUSEBUTTONUP:
                     self.on_click(event)
 
             # Update
@@ -99,6 +110,8 @@ class App:
         :param event:
         :return:
         """
+        if self.players_bot[self.turn]:
+            return
         x, y = pygame.mouse.get_pos()
         j, i = x // self.tile_width, y // self.tile_height
         if (i, j) in self.all_legal_moves:
@@ -121,7 +134,8 @@ class App:
         :return:
         """
         if self.play_move(pos1, pos2):
-            self.bot_play()
+            if self.players_bot[self.turn]:
+                self.bot_play()
 
     def bot_play(self):
         """
@@ -143,11 +157,11 @@ class App:
             "castles": self.castles,
             "en_passant": self.en_passant,
             "turn": self.turn
-        }, 4)
+        }, 3)
 
         if self.play_move(pos1, pos2):
-            # self.bot_play()
-            pass
+            if self.players_bot[self.turn]:
+                self.bot_play()
 
     def play_move(self, pos1, pos2):
         """

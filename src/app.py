@@ -54,6 +54,7 @@ class App:
         for file in os.scandir('./assets/black'):
             self.assets[pieces_ids[file.name[0]]] = pygame.transform.scale(
                 pygame.image.load(f'./assets/black/{file.name}'), (self.width / 8, self.height / 8))
+        self.update()
 
         self.players_bot = [False, False]
         if 'white' in kwargs:
@@ -157,7 +158,7 @@ class App:
             "castles": self.castles,
             "en_passant": self.en_passant,
             "turn": self.turn
-        }, 3)
+        }, 4)
 
         if self.play_move(pos1, pos2):
             if self.players_bot[self.turn]:

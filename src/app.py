@@ -45,7 +45,7 @@ class App:
         self.castles = game_data['castles']
 
         self.all_legal_moves = get_all_legal_moves(self.board, self.turn, self.en_passant, self.castles)
-        self.legal_moves, self.selected_piece = [], None
+        self.legal_moves, self.selected_piece, self.drag_piece = [], None, False
 
         self.assets = {}
         for file in os.scandir('./assets/white'):
@@ -78,8 +78,30 @@ class App:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
+                elif event.type == pygame.MOUSEBUTTONDOWN:
+                    x, y = pygame.mouse.get_pos()
+                    j, i = x // self.tile_width, y // self.tile_height
+                    if self.players_bot[self.turn] or self.selected_piece == self.board[i][j]:
+                        continue
+                    if (i, j) in self.all_legal_moves:
+                        self.selected_piece = (i, j)
+                        self.legal_moves = self.all_legal_moves[(i, j)]
+                        self.drag_piece = True
                 elif event.type == pygame.MOUSEBUTTONUP:
-                    self.on_click(event)
+                    if self.players_bot[self.turn]:
+                        continue
+                    if self.selected_piece is not None:
+                        x, y = pygame.mouse.get_pos()
+                        j, i = x // self.tile_width, y // self.tile_height
+                        if (i, j) == self.selected_piece:
+                            self.drag_piece = False
+                            continue
+                        if (i, j) in self.legal_moves:
+                            selected = self.selected_piece
+                            self.legal_moves, self.selected_piece, self.drag_piece = [], None, False
+                            self.player_play(selected, (i, j))
+                        else:
+                            self.legal_moves, self.selected_piece, self.drag_piece = [], None, False
 
             # Update
             self.update()
@@ -98,10 +120,13 @@ class App:
                 pygame.draw.rect(self.screen, (238, 238, 210) if (i + j) % 2 == 0 else (118, 150, 86),
                                  pygame.Rect(self.tile_width * i, self.tile_height * j, self.tile_width,
                                              self.tile_height))
-                if self.board[j][i] is not None:
+                if self.board[j][i] is not None and not (self.drag_piece and (j, i) == self.selected_piece):
                     self.screen.blit(self.assets[self.board[j][i]], (i * self.tile_width, j * self.tile_height))
                 if (j, i) in self.legal_moves:
                     self.screen.blit(self.point, (i * self.tile_width, j * self.tile_height))
+        if self.drag_piece:
+            x, y = pygame.mouse.get_pos()
+            self.screen.blit(self.assets[self.board[self.selected_piece[0]][self.selected_piece[1]]], (x - self.tile_width / 2, y - self.tile_height / 2))
         pygame.display.update()
 
     def on_click(self, event: pygame.event.Event):
@@ -144,21 +169,12 @@ class App:
 
         :return:
         """
-        # tree = create_decision_tree({
-        #     "board": self.board,
-        #     "castles": self.castles,
-        #     "en_passant": self.en_passant,
-        #     "turn": self.turn
-        # }, 3)
-        # best_data = minimax(tree, 3)
-        # pos1, pos2 = best_data['move']
-
         pos1, pos2 = minimax_root({
             "board": self.board,
             "castles": self.castles,
             "en_passant": self.en_passant,
             "turn": self.turn
-        }, 4)
+        }, 3)
 
         if self.play_move(pos1, pos2):
             if self.players_bot[self.turn]:

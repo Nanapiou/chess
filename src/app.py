@@ -38,6 +38,7 @@ class App:
         # Set a semi-transparent point, to use it in update()
         self.point = pygame.Surface((self.tile_width, self.tile_height), pygame.SRCALPHA)
         pygame.draw.circle(self.point, (0, 0, 0, 100), (self.tile_width / 2, self.tile_height / 2), self.tile_width / 5)
+        self.hand_grab_cursor = pygame.cursors.load_xbm('./assets/cursor-hand-grab.xbm', './assets/cursor-hand-grab.xbm')
 
         self.board = game_data['board']
         self.en_passant = game_data['en_passant']
@@ -115,6 +116,7 @@ class App:
 
         :return:
         """
+        x, y = pygame.mouse.get_pos()
         for i in range(8):
             for j in range(8):
                 pygame.draw.rect(self.screen, (238, 238, 210) if (i + j) % 2 == 0 else (118, 150, 86),
@@ -125,8 +127,10 @@ class App:
                 if (j, i) in self.legal_moves:
                     self.screen.blit(self.point, (i * self.tile_width, j * self.tile_height))
         if self.drag_piece:
-            x, y = pygame.mouse.get_pos()
+            pygame.mouse.set_cursor(*self.hand_grab_cursor)
             self.screen.blit(self.assets[self.board[self.selected_piece[0]][self.selected_piece[1]]], (x - self.tile_width / 2, y - self.tile_height / 2))
+        else:
+            pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
         pygame.display.update()
 
     def on_click(self, event: pygame.event.Event):

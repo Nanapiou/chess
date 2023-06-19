@@ -105,7 +105,8 @@ def minimax_root(game_data: GameData, dept: int) -> Tuple[Position, Position]:
     """
     game_data_copy = deepcopy(game_data)
     board = game_data_copy['board']
-    all_legal_moves = get_all_legal_moves(board, game_data_copy['turn'], game_data_copy['en_passant'], game_data_copy['castles'])
+    all_legal_moves = get_all_legal_moves(board, game_data_copy['turn'], game_data_copy['en_passant'],
+                                          game_data_copy['castles'])
 
     if game_data_copy['turn'] == 0:
         best, value = None, -10001
@@ -130,6 +131,7 @@ def minimax_root(game_data: GameData, dept: int) -> Tuple[Position, Position]:
                 reverse_moves(board, data['old_tiles'])
         return best
 
+
 def minimax_new(game_data: GameData, dept: int, alpha: int = -10000, beta: int = 10000) -> int:
     """
     New optimised version of minimax
@@ -143,7 +145,8 @@ def minimax_new(game_data: GameData, dept: int, alpha: int = -10000, beta: int =
     if dept == 0:
         return evaluate_position(game_data['board'])
 
-    all_legal_moves = get_all_legal_moves(game_data['board'], game_data['turn'], game_data['en_passant'], game_data['castles'])
+    all_legal_moves = get_all_legal_moves(game_data['board'], game_data['turn'], game_data['en_passant'],
+                                          game_data['castles'])
     if len(all_legal_moves) == 0:
         if game_data['turn'] == 0 and len(get_black_checks(game_data['board'])) > 0:
             return -10000
@@ -155,7 +158,8 @@ def minimax_new(game_data: GameData, dept: int, alpha: int = -10000, beta: int =
         v = -10001
         for piece_pos in all_legal_moves:
             for move in all_legal_moves[piece_pos]:
-                data = make_move_smooth(game_data['board'], piece_pos, move, game_data['en_passant'], game_data['castles'])
+                data = make_move_smooth(game_data['board'], piece_pos, move, game_data['en_passant'],
+                                        game_data['castles'])
                 data['turn'] = 1 - game_data['turn']
 
                 v = max(v, minimax_new(data, dept - 1, alpha, beta))
@@ -168,7 +172,8 @@ def minimax_new(game_data: GameData, dept: int, alpha: int = -10000, beta: int =
         v = 10001
         for piece_pos in all_legal_moves:
             for move in all_legal_moves[piece_pos]:
-                data = make_move_smooth(game_data['board'], piece_pos, move, game_data['en_passant'], game_data['castles'])
+                data = make_move_smooth(game_data['board'], piece_pos, move, game_data['en_passant'],
+                                        game_data['castles'])
                 data['turn'] = 1 - game_data['turn']
 
                 v = min(v, minimax_new(data, dept - 1, alpha, beta))
@@ -178,9 +183,6 @@ def minimax_new(game_data: GameData, dept: int, alpha: int = -10000, beta: int =
                 beta = min(beta, v)
 
     return v
-
-
-
 
 
 if __name__ == '__main__':

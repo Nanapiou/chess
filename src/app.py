@@ -178,7 +178,7 @@ class App:
             "castles": self.castles,
             "en_passant": self.en_passant,
             "turn": self.turn
-        }, 3)
+        }, 4)
 
         if self.play_move(pos1, pos2):
             if self.players_bot[self.turn]:

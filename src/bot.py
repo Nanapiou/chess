@@ -131,6 +131,24 @@ def minimax_root(game_data: GameData, dept: int) -> Tuple[Position, Position]:
                 reverse_moves(board, data['old_tiles'])
         return best
 
+def compare_two_moves(game_data: GameData, p1, m1, p2, m2):
+    d1 = make_move_smooth(game_data['board'], p1, m1, game_data['en_passant'],
+                                        game_data['castles'])
+    s1 = evaluate_position(game_data['board'])
+    reverse_moves(game_data['board'], d1['old_tiles'])
+    d2 = make_move_smooth(game_data['board'], p2, m2, game_data['en_passant'],
+                                        game_data['castles'])
+    s2 = evaluate_position(game_data['board'])
+    reverse_moves(game_data['board'], d2['old_tiles'])
+    return s1 - s2
+
+def flatten_move_dict(all_legal_moves: Dict[Position, List[Position]]) -> List[Tuple[Position, Position]]:
+    moves = []
+    for piece_pos in all_legal_moves:
+        for move in all_legal_moves[piece_pos]:
+            moves.append((piece_pos, move))
+    return moves
+    
 
 def minimax_new(game_data: GameData, dept: int, alpha: int = -10000, beta: int = 10000) -> int:
     """
@@ -155,34 +173,30 @@ def minimax_new(game_data: GameData, dept: int, alpha: int = -10000, beta: int =
         else:
             return 0
     if game_data['turn'] == 0:
-        v = -10001
-        for piece_pos in all_legal_moves:
-            for move in all_legal_moves[piece_pos]:
-                data = make_move_smooth(game_data['board'], piece_pos, move, game_data['en_passant'],
-                                        game_data['castles'])
-                data['turn'] = 1 - game_data['turn']
+        for piece_pos, move in sorted(flatten_move_dict(all_legal_moves), key=lambda x: compare_two_moves(game_data, x[0], x[1], x[0], x[1]), reverse=True):
+            data = make_move_smooth(game_data['board'], piece_pos, move, game_data['en_passant'],
+                                    game_data['castles'])
+            data['turn'] = 1 - game_data['turn']
 
-                v = max(v, minimax_new(data, dept - 1, alpha, beta))
-                reverse_moves(game_data['board'], data['old_tiles'])
-                if v >= beta:
-                    return v
-                alpha = max(alpha, v)
+            v = minimax_new(data, dept - 1, alpha, beta)
+            reverse_moves(game_data['board'], data['old_tiles'])
+            if v >= beta:
+                return v
+            alpha = max(alpha, v)
+        return alpha
 
     else:
-        v = 10001
-        for piece_pos in all_legal_moves:
-            for move in all_legal_moves[piece_pos]:
-                data = make_move_smooth(game_data['board'], piece_pos, move, game_data['en_passant'],
-                                        game_data['castles'])
-                data['turn'] = 1 - game_data['turn']
+        for piece_pos, move in sorted(flatten_move_dict(all_legal_moves), key=lambda x: compare_two_moves(game_data, x[0], x[1], x[0], x[1])):
+            data = make_move_smooth(game_data['board'], piece_pos, move, game_data['en_passant'],
+                                    game_data['castles'])
+            data['turn'] = 1 - game_data['turn']
 
-                v = min(v, minimax_new(data, dept - 1, alpha, beta))
-                reverse_moves(game_data['board'], data['old_tiles'])
-                if alpha >= v:
-                    return v
-                beta = min(beta, v)
-
-    return v
+            v = minimax_new(data, dept - 1, alpha, beta)
+            reverse_moves(game_data['board'], data['old_tiles'])
+            if alpha >= v:
+                return v
+            beta = min(beta, v)
+    return beta
 
 
 if __name__ == '__main__':
